@@ -1,0 +1,59 @@
+version: '1.0'
+services:
+  - name: db
+    type: postgres
+    version: 10.1
+    configuration: StandAlone
+    username: pyro
+    # Ask password on create
+    userPassword: null
+    ports:
+      - 5432
+    remoteAccess: false
+    comments:
+      userPassword: Password for user "pyro"
+    deployTo:
+      - pyro
+
+  - name: pyro
+    type: php
+    version: 7.2
+    source:
+      type: git
+      url: https://github.com/pyrocms/pyrocms
+      version: v3.4.15
+    extensions:
+      - opcache
+      - gd
+      - pdo_pgsql
+      - pdo_mysql
+    remoteAccess: false
+    localDeps: composer install
+    initialCommands: |
+      cd $MAIN_PATH
+      php artisan install --ready
+      rm -rf ./core/anomaly/installer-module
+    configFiles:
+      - dest: $MAIN_PATH/.env
+        src: .env
+    deployTo:
+      - pyro
+
+  - name: web
+    type: nginx
+    version: 1.13
+    ports:
+      - 80
+      - 443
+    remoteAccess: true
+    serviceFiles:
+      - name: pyro
+        src: pyro.conf
+    deployTo:
+      - pyro
+
+hosts:
+  - name: pyro
+    requirements:
+      cores: 1
+      memory: 2
