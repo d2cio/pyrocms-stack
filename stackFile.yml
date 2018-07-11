@@ -2,9 +2,10 @@ version: '1.0'
 services:
   - name: db
     type: postgres
-    version: 10.1
+    version: 10.4
     configuration: StandAlone
     username: pyro
+    database: pyro
     # Ask password on create
     userPassword: null
     ports:
