@@ -42,7 +42,7 @@ services:
 
   - name: web
     type: nginx
-    version: 1.13
+    version: 1.14
     ports:
       - 80
       - 443
